@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pusaka Jateng | Pelestarian Sejarah</title>
+    <style>
+        /* --- CSS Reset & Variables --- */
+        :root {
+            --primary-color: #5C4033;
+            --secondary-color: #8B5A2B;
+            --accent-color: #D4AF37; /* Kuning Emas */
+            --bg-color: #Fdfbf7;
+            --text-color: #333;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth; /* Smooth scrolling */
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- Navigation --- */
+        header {
+            background-color: #EEEEEE; 
+            color: var(--text-color);
+            padding: 0.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        header h1 {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            cursor: pointer;
+            user-select: none; /* Mencegah teks terblokir saat diketuk cepat */
+            -webkit-tap-highlight-color: transparent; /* Menghilangkan efek blok warna saat ditap di HP */
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+        }
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: normal; 
+            transition: color 0.3s;
+            padding: 0.5rem; 
+        }
+        nav a:hover {
+            color: var(--primary-color);
+        }
+        nav li.active a {
+            background-color: #666666; 
+            color: white;
+            border-radius: 4px; 
+        }
+
+        /* --- HERO SECTION WITH MANUAL SLIDER --- */
+        #hero {
+            position: relative;
+            height: 85vh;
+            overflow: hidden; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 500%; /* 5 Gambar = 500% */
+            height: 100%;
+            display: flex;
+            z-index: 1;
+            transition: transform 0.5s ease-in-out; 
+        }
+
+        .slide {
+            width: 20%; /* 100% / 5 = 20% */
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .hero-content h2 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            color: #d1ab45; 
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background-color: #d1ab45;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #f1c40f;
+            transform: scale(1.05);
+        }
+        
+        .btn:disabled {
+            background-color: #cccccc;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        /* Slider Controls */
+        .slider-arrow {
+            position: absolute;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 3rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .slider-arrow:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+        .slider-arrow.prev { left: 20px; }
+        .slider-arrow.next { right: 20px; }
+
+        .slider-pagination {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+        .pagination-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            border: 2px solid white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .pagination-dot.active {
+            background: white;
+        }
+
+        /* --- Dark Section --- */
+        #hero-next-section {
+            background-color: #333333; 
+            padding: 5rem 5%;
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .mockup-form-placeholder {
+            background-color: white;
+            width: 80%;
+            min-height: 300px; 
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Section Global Styles */
+        section.content-section {
+            padding: 5rem 5%;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 3rem;
+        }
+
+        /* Tentang Section */
+        #tentang {
+            background-color: white;
+            text-align: center;
+            max-width: 800px;
+            margin: auto;
+            padding: 4rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-top: -60px; 
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Destinasi Section */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+        }
+        .card {
+            background: white;
+            width: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            text-decoration: none; 
+            color: inherit; 
+            display: block; 
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-content {
+            padding: 1.5rem;
+        }
+        .card-title {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Partisipasi Section */
+        #partisipasi {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        #partisipasi .section-title {
+            color: var(--accent-color);
+        }
+        .action-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .action-poster {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            justify-content: center;
+        }
+        .action-poster img {
+            width: 100%;
+            max-width: 450px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            border: 4px solid var(--accent-color);
+        }
+        .action-list {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+        .action-item {
+            background: rgba(255,255,255,0.05);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 5px solid var(--accent-color);
+            transition: background 0.3s;
+        }
+        .action-item:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        .action-item h3 {
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        .action-item p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* --- Pasal Section --- */
+        .law-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .law-card {
+            background: #fff;
+            border-top: 5px solid #8B0000; 
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+            text-align: left;
+        }
+        .law-card:hover {
+            transform: translateY(-5px);
+        }
+        .law-card:nth-child(2) {
+            border-top-color: var(--secondary-color);
+        }
+        .law-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .law-quote {
+            font-style: italic;
+            background: #fdfbf7;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--accent-color);
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* --- Kontak Section --- */
+        .contact-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.2rem;
+            text-decoration: none;
+            color: var(--text-color);
+            background: #fff;
+            padding: 12px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s, color 0.3s;
+            font-weight: bold;
+        }
+        .contact-item:hover {
+            transform: translateY(-3px);
+            color: var(--primary-color);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        .contact-icon {
+            font-size: 1.5rem;
+        }
+
+        /* --- Easter Egg Modal --- */
+        #easter-egg-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.5s ease-out;
+        }
+        .easter-content {
+            background: linear-gradient(135deg, #2b1b17, #5C4033);
+            border: 3px solid var(--accent-color);
+            padding: 3rem;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            max-width: 500px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+            position: relative;
+            margin: 20px;
+        }
+        .easter-content h2 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        .easter-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        .close-easter {
+            margin-top: 2rem;
+            background: var(--accent-color);
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .close-easter:hover {
+            transform: scale(1.05);
+            background: #fff;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* --- Mascot Popup --- */
+        .mascot-container {
+            position: fixed;
+            bottom: -250px; /* Tersembunyi di bawah layar */
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            /* Efek transisi memantul (bouncy) */
+            transition: bottom 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .mascot-container.show {
+            bottom: 20px; /* Posisi saat muncul */
+        }
+        .mascot-speech {
+            background: white;
+            padding: 12px 18px;
+            border-radius: 20px 20px 0 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--primary-color);
+            max-width: 220px;
+            text-align: center;
+            border: 2px solid var(--accent-color);
+            font-size: 0.95rem;
+        }
+        .mascot-character {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--accent-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.3s;
+            background-color: white;
+        }
+        .mascot-character:hover {
+            transform: scale(1.1) rotate(-10deg);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul { display: none; }
+            .hero-content h2 { font-size: 2.2rem; }
+            .hero-content p { font-size: 1rem; }
+            .slider-arrow { font-size: 2rem; }
+            .action-container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="logo-title" title="Ada rahasia di sini...">Ambatukam</h1>
+        <nav>
+            <ul>
+                <li class="active"><a href="#hero">Home</a></li>
+                <li><a href="#tentang">About</a></li>
+                <li><a href="#destinasi">Tempat</a></li>
+                <li><a href="#partisipasi">Aksi</a></li>
+                <li><a href="#artikel">Artikel</a></li>
+                <li><a href="#kontak">Kontak</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="hero">
+        <div class="hero-slider">
+           <div class="slide" style="background-image: url('image_3.png');"></div>
+            <div class="slide" style="background-image: url('image_4.png');"></div>
+            <div class="slide" style="background-image: url('image_5.png');"></div>
+            <div class="slide" style="background-image: url('image_6.png');"></div>
+            <div class="slide" style="background-image: url('image_7.png');"></div>
+            <div class="slide" style="background-image: url('image_8.png');"></div>
+        </div>
+        
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+            <h2>Sejarah Cerahkan Masa Depan</h2>
+            <p>Jawa Tengah adalah jantung kebudayaan Nusantara. Mari bersama-sama melestarikan dan menjaga warisan peninggalan sejarah untuk generasi mendatang.</p>
+            <a href="#destinasi" class="btn">Jelajahi Situs Sejarah</a>
+        </div>
+
+        <button id="prevBtn" class="slider-arrow prev">&#10094;</button> 
+        <button id="nextBtn" class="slider-arrow next">&#10095;</button> 
+        <div class="slider-pagination" id="dotsContainer"></div>
+    </section>
+
+    <section id="hero-next-section">
+        <div class="mockup-form-placeholder">
+            <p style="padding: 2rem; color: #3b3131;">Tahukah kamu? Jawa Tengah merupakan rumah bagi struktur Buddha terbesar di dunia dan salah satu kompleks candi Hindu terindah di Asia Tenggara yang berdiri megah dalam satu provinsi yang sama. Keunikan sejarah ini diwakili oleh Candi Borobudur, sebuah monumen Buddha raksasa yang dihiasi ribuan panel relief dan stupa yang menawan, serta Candi Prambanan, kompleks candi Hindu berarsitektur ramping yang menjulang tinggi dan menceritakan epik Ramayana yang sangat detail. Keberadaan dua situs Warisan Dunia UNESCO yang letaknya tidak terlalu jauh ini bukan hanya sekadar daya tarik pariwisata kelas dunia, melainkan juga bukti nyata akan tingginya peradaban arsitektur, toleransi beragama yang kuat, serta kekayaan warisan budaya Nusantara yang telah terjalin dengan harmonis sejak abad ke-8 dan ke-9 Masehi</p>
+        </div>
+    </section>
+
+    <section id="tentang" class="content-section">
+        <h2 class="section-title" style="margin-bottom: 1rem;">Mengapa Harus Dilestarikan?</h2>
+        <p>Peninggalan sejarah seperti candi, benteng, dan kawasan kota lama bukan sekadar tumpukan batu bata purbakala. Mereka adalah identitas, bukti peradaban, dan sumber ilmu pengetahuan. Pelestarian cagar budaya di Jawa Tengah membutuhkan peran aktif dari pemerintah, masyarakat, dan generasi muda agar tidak lekang oleh zaman dan kerusakan lingkungan.</p>
+    </section>
+
+    <section id="destinasi" class="content-section">
+        <h2 class="section-title">Fokus Pelestarian Kami</h2>
+        <div class="card-container">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1596402184320-417e7178b2cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Candi Borobudur">
+                <div class="card-content">
+                    <h3 class="card-title">Candi Borobudur, Magelang</h3>
+                    <p>Fokus pada pembatasan pengunjung di area stupa untuk mencegah keausan batu candi dan edukasi pengunjung.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMBXuHMmxl8OJiQWYwcRKkbM0uBdDDwOqmug&s" alt="Kota Lama Semarang">
+                <div class="card-content">
+                    <h3 class="card-title">Kota Lama, Semarang</h3>
+                    <p>Revitalisasi bangunan era kolonial yang terbengkalai untuk dijadikan ruang kreatif tanpa merusak nilai historis.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFYMwXQdGiWbyUcRnLLI5KYRarudI6kMiCoQ&s" alt="Keraton Surakarta">
+                <div class="card-content">
+                    <h3 class="card-title">Keraton Surakarta</h3>
+                    <p>Perawatan artefak museum dan pemugaran struktur keraton yang terdampak usia serta cuaca.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://asset.kompas.com/crops/ka9NQuJYYhBZo8FbuObb0XgFhwo=/129x37:1214x580/1200x800/data/photo/2022/09/26/63317c5ea34d3.png" alt="Setasiun Ambarawa">
+                <div class="card-content">
+                    <h3 class="card-title">Stasiun Ambarawa</h3>
+                    <p>Stasiun Ambarawa, yang kini dikenal sebagai Museum Kereta Api Ambarawa, adalah peninggalan sejarah era Hindia Belanda.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BAGIAN YANG DIPERBARUI BERDASARKAN POSTER -->
+    <section id="partisipasi" class="content-section">
+        <h2 class="section-title">5 Aksi Melindungi Warisan Jawa Tengah</h2>
+        <div class="action-container">
+            <div class="action-poster">
+                <img src="Desain tanpa judul.png" alt="Poster 5 Aksi Melindungi Warisan Jawa Tengah dari Vandalisme">
+            </div>
+            <div class="action-list">
+                <div class="action-item">
+                    <h3>1. Hentikan Coretan Arca</h3>
+                    <p>Jaga arca dan artefak dari pilox & coretan.<br><strong>Contoh:</strong> Arca di Dieng & Borobudur.</p>
+                </div>
+                <div class="action-item">
+                    <h3>2. Jangan Memahat Tembok Candi</h3>
+                    <p>Hargai keutuhan struktur bangunan bersejarah.<br><strong>Contoh:</strong> Tembok relief Borobudur & Prambanan.</p>
+                </div>
+                <div class="action-item">
+                    <h3>3. Dilarang Meletakkan Stiker di Tugu</h3>
+                    <p>Jaga keaslian monumen bersejarah dari tempelan yang merusak.<br><strong>Contoh:</strong> Tugu Muda & Monumen Sejarah.</p>
+                </div>
+                <div class="action-item">
+                    <h3>4. Stop Graffiti di Kawasan Kota Lama</h3>
+                    <p>Gedung tua bukan media coretan! Hormati nilai arsitekturnya.<br><strong>Contoh:</strong> Gereja Blenduk & Bangunan Kota Lama.</p>
+                </div>
+                <div class="action-item">
+                    <h3>5. Jaga Kawasan Sejarah dari Sampah & Vandalisme</h3>
+                    <p>Ciptakan lingkungan yang bersih dan terawat bagi semua pengunjung.<br><strong>Contoh:</strong> Kawasan Cagar Budaya Dieng & Kawasan Kota Lama.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="artikel" class="content-section">
+        <h2 class="section-title">Artikel & Berita: Darurat Vandalisme</h2>
+        <div class="card-container">
+            <a href="https://www.kompas.id/artikel/borobudur-terancam-corat-coret-hingga-permen-karet" target="_blank" class="card">
+                <img src="https://images.unsplash.com/photo-1596402184320-417e7178b2cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Vandalisme Borobudur">
+                <div class="card-content">
+                    <h3 class="card-title">Borobudur Terancam Corat-coret hingga Permen Karet</h3>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">Kompas.id</p>
+                    <p>Balai Konservasi Borobudur kerap menemukan ribuan noda permen karet dan coretan pengunjung yang sangat sulit dibersihkan dan berisiko merusak batuan.</p>
+                </div>
+            </a>
+            
+            <a href="https://news.detik.com/berita-jawa-tengah/d-4400931/penutup-saluran-air-di-kawasan-kota-lama-semarang-hilang" target="_blank" class="card">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQG3qeF1y6U7zIE6Td1bw3PL7Qo74S0TVtSQw&s" alt="Vandalisme Kota Lama Semarang">
+                <div class="card-content">
+                    <h3 class="card-title">Penutup Saluran Air & Fasilitas di Kota Lama Semarang Sasaran Vandal</h3>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">detikNews</p>
+                    <p>Kawasan Kota Lama Semarang masih sering menjadi target tangan jahil. Beberapa fasilitas dirusak hingga penutup saluran air besi dicuri oleh oknum tak bertanggung jawab.</p>
+                </div>
+            </a>
+
+            <a href="https://www.suaramerdeka.com/jawa-tengah/pr-04108134/cagar-budaya-rentan-jadi-sasaran-vandalisme" target="_blank" class="card">
+                <img src="https://assets.promediateknologi.id/crop/0x0:0x0/1200x600/webp/photo/suaramerdeka/images/2019/08/26/vandalisme-5d6368737f8e2.jpg" alt="Kerusakan Cagar Budaya Terbuka">
+                <div class="card-content">
+                    <h3 class="card-title">Cagar Budaya Rentan Jadi Sasaran Vandalisme</h3>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">Suara Merdeka</p>
+                    <p>Banyak situs peninggalan bersejarah yang rentan mengalami kerusakan fisik. Kemungkinan besar pelaku vandalisme tidak mengetahui bahwa perbuatannya merusak cagar budaya.</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <section id="pasal" class="content-section" style="background-color: #f4f1ea;">
+        <h2 class="section-title">Pasal & Dasar Hukum Pelestarian</h2>
+        <p style="text-align: center; max-width: 700px; margin: 0 auto 3rem auto;">Undang-Undang Republik Indonesia secara tegas melindungi Cagar Budaya. Tindakan vandalisme dan perusakan bukanlah hal sepele kenakalan remaja, melainkan <b>tindak pidana</b>.</p>
+        
+        <div class="law-container">
+            <div class="law-card">
+                <div class="law-icon">🛑</div>
+                <h3 class="card-title">Larangan Keras Vandalisme</h3>
+                <p style="font-weight: bold; color: #8B0000; margin-bottom: 0.5rem;">Pasal 66 ayat (1) UU No. 11 Tahun 2010</p>
+                <p>Tindakan perusakan sekecil apa pun, termasuk corat-coret (vandalisme), menempelkan permen karet, atau memindahkan batu candi secara tegas dilarang oleh negara.</p>
+                <div class="law-quote">
+                    "Setiap orang dilarang merusak Cagar Budaya, baik seluruh maupun bagian-bagiannya, dari kesatuan, kelompok, dan/atau dari letak asal."
+                </div>
+            </div>
+            
+            <div class="law-card">
+                <div class="law-icon">⚖️</div>
+                <h3 class="card-title">Sanksi Pidana & Denda</h3>
+                <p style="font-weight: bold; color: var(--secondary-color); margin-bottom: 0.5rem;">Pasal 105 UU No. 11 Tahun 2010</p>
+                <p>Setiap pelanggar perusakan cagar budaya tidak hanya akan mendapat teguran, melainkan akan diproses hukum pidana dengan sanksi yang sangat berat.</p>
+                <div class="law-quote">
+                    "Dipidana dengan <strong>pidana penjara paling singkat 1 (satu) tahun dan paling lama 15 (lima belas) tahun</strong> dan/atau denda paling sedikit Rp500.000.000,00 dan paling banyak Rp5.000.000.000,00."
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="kontak" class="content-section">
+        <h2 class="section-title">Kontak & Dukungan</h2>
+        <p style="text-align: center;">Untuk melaporkan kerusakan atau memberikan dukungan, silakan hubungi kami melalui:</p>
+        
+        <div class="contact-container">
+            <a href="mailto:saptaeicah49@gmail.com" class="contact-item">
+                <span class="contact-icon">📧</span>
+                saptaeicah49@gmail.com
+            </a>
+            <a href="https://www.instagram.com/ricahyos?utm_source=qr&igsh=YjVrZ2RwZGJjdnQy" target="_blank" class="contact-item">
+                <span class="contact-icon">📸</span>
+                @RICAHYOS
+            </a>
+        </div>
+    </section>
+
+    <!-- Easter Egg Modal HTML -->
+    <div id="easter-egg-modal">
+        <div class="easter-content">
+            <div class="easter-icon">🗝️🏺</div>
+            <h2>Rahasia Terbuka!</h2>
+            <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 1rem;">Selamat! Anda telah menemukan pesan tersembunyi. Terima kasih telah meluangkan waktu untuk mengeksplorasi dan peduli pada warisan Jawa Tengah.</p>
+            <p style="font-style: italic; color: #e2dcd0;">"Bangsa yang besar adalah bangsa yang menghargai jasa pahlawannya, dan merawat peninggalannya."</p>
+            <p style="margin-top: 1.5rem; font-weight: bold; color: var(--accent-color);">~ Anda adalah Penjaga Pusaka Sejati ~</p>
+            <button class="close-easter" id="close-easter-btn">Tutup Rahasia</button>
+        </div>
+    </div>
+
+    <!-- Mascot Popup Imut -->
+    <div id="cute-mascot" class="mascot-container">
+        <div class="mascot-speech">Halo! Mari bersama jaga warisan budaya Jateng ya! ✨</div>
+        <img src="image_e40fe3.png" alt="Maskot Imut" class="mascot-character">
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Pusaka Jateng - Didik Generasi, Rawat Tradisi.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Logika Slider ---
+            const slider = document.querySelector('.hero-slider');
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const dotsContainer = document.getElementById('dotsContainer');
+            
+            let currentIndex = 0;
+            const slideCount = slides.length;
+            let autoSlideInterval;
+
+            for (let i = 0; i < slideCount; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('pagination-dot');
+                if (i === currentIndex) dot.classList.add('active');
+                dot.dataset.index = i; 
+                dotsContainer.appendChild(dot);
+            }
+            const dots = document.querySelectorAll('.pagination-dot');
+
+            function updateSliderPosition() {
+                slider.style.transform = `translateX(-${(currentIndex * 100) / slideCount}%)`;
+                dots.forEach(dot => dot.classList.remove('active'));
+                dots[currentIndex].classList.add('active');
+            }
+
+            function goToSlide(index) {
+                if (index < 0) index = slideCount - 1;
+                if (index >= slideCount) index = 0;
+                currentIndex = index;
+                updateSliderPosition();
+                resetAutoSlide(); 
+            }
+
+            function prevSlide() { goToSlide(currentIndex - 1); }
+            function nextSlide() { goToSlide(currentIndex + 1); }
+
+            prevBtn.addEventListener('click', prevSlide);
+            nextBtn.addEventListener('click', nextSlide);
+
+            dotsContainer.addEventListener('click', (event) => {
+                if (event.target.classList.contains('pagination-dot')) {
+                    const dotIndex = parseInt(event.target.dataset.index, 10);
+                    goToSlide(dotIndex);
+                }
+            });
+
+            function startAutoSlide() {
+                autoSlideInterval = setInterval(nextSlide, 7000); 
+            }
+
+            function resetAutoSlide() {
+                clearInterval(autoSlideInterval);
+                startAutoSlide();
+            }
+
+            startAutoSlide(); 
+            
+            // --- Logika Easter Egg ---
+            const easterModal = document.getElementById('easter-egg-modal');
+            const closeEasterBtn = document.getElementById('close-easter-btn');
+
+            // 1. Trigger Keyboard (Untuk Desktop)
+            const secretCode = "pusaka";
+            let inputSequence = "";
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key.length > 1) return;
+                
+                inputSequence += e.key.toLowerCase();
+                
+                if (inputSequence.length > secretCode.length) {
+                    inputSequence = inputSequence.slice(-secretCode.length);
+                }
+
+                if (inputSequence === secretCode) {
+                    easterModal.style.display = 'flex';
+                    inputSequence = ""; 
+                }
+            });
+
+            // 2. Trigger Ketukan / Tap (Untuk Mobile)
+            const logoTitle = document.getElementById('logo-title');
+            let tapCount = 0;
+            let tapTimeout;
+
+            logoTitle.addEventListener('click', () => {
+                tapCount++;
+                clearTimeout(tapTimeout); // Hapus timer sebelumnya agar ketukan cepat bisa terhitung
+
+                if (tapCount === 5) {
+                    easterModal.style.display = 'flex';
+                    tapCount = 0; // Reset setelah berhasil
+                }
+
+                // Reset hitungan kembali ke 0 jika pengguna berhenti mengetuk selama lebih dari 1.5 detik
+                tapTimeout = setTimeout(() => {
+                    tapCount = 0;
+                }, 1500);
+            });
+
+            // Logika Menutup Modal
+            closeEasterBtn.addEventListener('click', () => {
+                easterModal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === easterModal) {
+                    easterModal.style.display = 'none';
+                }
+            });
+
+            // --- Logika Karakter Imut (Mascot) ---
+            const mascot = document.getElementById('cute-mascot');
+            
+            setTimeout(() => {
+                mascot.classList.add('show');
+                
+                setTimeout(() => {
+                    mascot.classList.remove('show');
+                }, 6000);
+            }, 4000);
+
+            mascot.addEventListener('click', () => {
+                mascot.classList.remove('show');
+            });
+        });
+    </script>
+</body>
+</html>
